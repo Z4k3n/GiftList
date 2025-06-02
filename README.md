@@ -1,26 +1,93 @@
-# Gift List
+# 🎁 Gift List Project
 
-To get started with the repository, clone it and then run `npm install` in the top-level directory to install the depedencies.
+This project implements a **Merkle Tree-based gift verification system**, inspired by the blockchain concept of minimal data verification.
 
-There are three folders in this repository:
+---
 
-## Client
+## 📌 Overview
 
-You can run the client from the top-level directory with `node client/index`. This file is a script which will send an HTTP request to the server.
+The goal is to allow a server to verify if a given name is on a predefined gift list using only a **single 32-byte Merkle Root** stored on the server — without storing the entire list.
 
-Think of the client as the _prover_ here. It needs to prove to the server that some `name` is in the `MERKLE_ROOT` on the server. 
+The client proves membership by sending a **Merkle Proof** for their name, which the server verifies cryptographically.
 
-## Server
+---
 
-You can run the server from the top-level directory with `node server/index`. This file is an express server which will be hosted on port 1225 and respond to the client's request.
+## ✅ What I Added / Implemented
 
-Think of the server as the _verifier_ here. It needs to verify that the `name` passed by the client is in the `MERKLE_ROOT`. If it is, then we can send the gift! 
+### 🌲 Merkle Tree Construction
 
-## Utils
+- Created a `MerkleTree` class that hashes and organizes the list of names (`niceList.json`) into a Merkle Tree.
+- Enables efficient generation of Merkle Proofs.
 
-There are a few files in utils:
+### 🧠 Client Logic (`client/index.js`)
 
-- The `niceList.json` which contains all the names of the people who deserve a gift this year (this is randomly generated, feel free to add yourself and others to this list!)
-- The `example.js` script shows how we can generate a root, generate a proof and verify that some value is in the root using the proof. Try it out from the top-level folder with `node/example.js`
-- The `MerkleTree.js` should look familiar from the Merkle Tree module! This one has been modified so you should not have to deal with any crypto type conversion. You can import this in your client/server
-- The `verifyProof.js` should also look familiar. This was the last stage in the module. You can use this function to prove a name is in the merkle root, as show in the example.
+- The client builds the Merkle Tree locally.
+- Generates a Merkle Proof for a specific name.
+- Sends the proof and the name to the server for verification.
+
+### 🖥️ Server Logic (`server/index.js`)
+
+- The server holds a **hardcoded Merkle Root** representing the gift list.
+- Verifies the Merkle Proof for the provided name against the stored root.
+- Responds with a gift message if the name is valid.
+
+### 🔐 Proof Verification (`utils/verifyProof.js`)
+
+- Cryptographic verification function that:
+  - Rebuilds the path from the leaf node (hashed name) to the Merkle Root.
+  - Uses the proof sent by the client to confirm membership.
+
+### 🗃️ Hardcoded Merkle Root
+
+- Precomputed the Merkle Root from the full `niceList.json`.
+- Hardcoded it in the server to simulate **minimal on-server storage**.
+
+---
+
+## 🚀 How to Run
+
+1. Clone the repo and install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+2. Start the server:
+
+   ```bash
+   node server/index.js
+   ```
+
+3. Run the client script (edit the name in `client/index.js` if desired):
+
+   ```bash
+   node client/index.js
+   ```
+
+4. The client sends a proof to the server to verify if the name is on the gift list.
+5. The server responds with either a gift message or a rejection.
+
+---
+
+## 📁 Project Structure
+
+```
+project-root/
+├── client/          # Proves membership with Merkle Proofs
+├── server/          # Verifies proofs against the Merkle Root
+├── utils/           # Utilities and logic
+│   ├── niceList.json      # List of names eligible for gifts
+│   ├── MerkleTree.js      # Merkle Tree implementation
+│   ├── verifyProof.js     # Server-side proof verification
+│   └── example.js         # Demo: roots, proofs, and verification
+```
+
+---
+
+## 📝 Notes
+
+- This project showcases how **blockchain-inspired data structures** can optimize verification without storing entire datasets.
+- Merkle Tree and Proof system ensures:
+  - ✅ Minimal data transfer
+  - 🔒 Secure verification
+- Useful for **decentralized** and **privacy-sensitive** applications.
