@@ -8,7 +8,7 @@ async function main() {
 
   const merkleTree = new MerkleTree(niceList);
 
-  const name = "Joel Raynor"; // Asegúrate de que esté en niceList.json
+  const name = "Joel Raynor";
 
   const index = niceList.findIndex(n => n === name);
 
